@@ -3,7 +3,7 @@
 #Let's first hardcode the public ip address
 PUBLIC_IP="your_ec2_instance_public_ip"
 
-# Update and upgrade the system
+# Update to refresh the package list
 sudo apt update 
 # Install necessary dependencies
 sudo apt install virtualenv nginx -y
