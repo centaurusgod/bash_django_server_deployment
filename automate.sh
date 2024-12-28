@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #Let's first hardcode the public ip address
-PUBLIC_IP="13.200.215.158"
+PUBLIC_IP="your_ec2_instance_public_ip"
 
 # Update and upgrade the system
 sudo apt update 
