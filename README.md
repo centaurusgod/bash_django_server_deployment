@@ -30,20 +30,6 @@ This repository contains an automation script for deploying a Django REST API pr
 
 ## Deployment Methods
 
-### Method 1: Using SSH with .pem file
-```bash
-# Connect to EC2 instance
-ssh -i "your-key.pem" ubuntu@your-ec2-public-ip
-# Create the automation script file in the home directory
-nano automate.sh
-# Copy the contents of the script into the file
-# Save and exit
-# Make the script executable    
-chmod +x automate.sh
-# Run the script
-./automate.sh
-```
-
 ### Method 1: Using AWS CLI (Windows)
 
 #### Prerequisites
@@ -83,6 +69,12 @@ chmod +x automate.sh
    - Place it in your working directory
 
 #### Deployment Steps
+> **Note**: Replace the following placeholders in the script:
+> - `<YOUR-AMI-ID>`: Your Ubuntu Server 24.04 LTS AMI ID | (by_default-> "ami-053b12d3152c0cc71" )
+> - `<YOUR-KEY-PAIR-NAME>`: Name of your key pair
+> - `<YOUR-SECURITY-GROUP-ID>`: Your security group ID
+> - `<YOUR-PEM-FILE>`: Name of your .pem file
+> - `<YOUR-SERVER-NAME>`: Name tag for your EC2 instance (default is "django_server")
 
 1. Create a file named `deployment.sh` with the following content:
    ```bash
@@ -90,12 +82,12 @@ chmod +x automate.sh
 
    # Step 1: Launch EC2 Instance
    INSTANCE_ID=$(aws ec2 run-instances \
-     --image-id "ami-053b12d3152c0cc71" \
+     --image-id "<YOUR-AMI-ID>" \
      --instance-type "t2.micro" \
      --key-name "<YOUR-KEY-PAIR-NAME>" \
      --block-device-mappings '[{"DeviceName":"/dev/sda1","Ebs":{"VolumeSize":8,"VolumeType":"gp3"}}]' \
      --network-interfaces '{"AssociatePublicIpAddress":true,"DeviceIndex":0,"Groups":["<YOUR-SECURITY-GROUP-ID>"]}' \
-     --tag-specifications '{"ResourceType":"instance","Tags":[{"Key":"Name","Value":"django_server"}]}' \
+     --tag-specifications '{"ResourceType":"instance","Tags":[{"Key":"Name","Value":"<YOUR-SERVER-NAME>"}]}' \
      --count "1" \
      --query 'Instances[0].InstanceId' \
      --output text)
@@ -135,11 +127,19 @@ chmod +x automate.sh
    ./deployment.sh
    ```
 
-> **Note**: Replace the following placeholders in the script:
-> - `<YOUR-AMI-ID>`: Your Ubuntu Server 24.04 LTS AMI ID
-> - `<YOUR-KEY-PAIR-NAME>`: Name of your key pair
-> - `<YOUR-SECURITY-GROUP-ID>`: Your security group ID
-> - `<YOUR-PEM-FILE>`: Name of your .pem file
+### Method 2: (Slightly Manual) Using SSH with .pem file
+```bash
+# Connect to EC2 instance
+ssh -i "your-key.pem" ubuntu@your-ec2-public-ip
+# Create the automation script file in the home directory
+nano automate.sh
+# Copy the contents of the script into the file
+# Save and exit
+# Make the script executable    
+chmod +x automate.sh
+# Run the script
+./automate.sh
+```
 
 ## What the Script Does
 
