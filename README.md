@@ -2,7 +2,11 @@
 
 ⚠️ **Note: This script is a work in progress and needs several improvements**
 
+⚠️ **Compatibility Note: This script is specifically designed and tested for Ubuntu Server 24.04 LTS and has not been tested with other distributions.**
+
 This repository contains an automation script for deploying a Django REST API project on an EC2 instance with Nginx and Gunicorn. This script is specifically designed as an example for deploying the project from [django_rest_project_management_api](https://github.com/centaurusgod/django_rest_project_management_api.git).
+
+
 
 > **Note**: The Nginx and Gunicorn configurations in this script are tailored for the example repository mentioned above. You should modify these configurations according to your specific project requirements if using with a different Django project.
 
@@ -24,7 +28,7 @@ This repository contains an automation script for deploying a Django REST API pr
 - Git installed on the EC2 instance
 - Proper AWS security group settings (Port 80 open for HTTP)
 
-## Getting Started
+## Deployment Methods
 
 ### Method 1: Using SSH with .pem file
 ```bash
@@ -39,6 +43,103 @@ chmod +x automate.sh
 # Run the script
 ./automate.sh
 ```
+
+### Method 1: Using AWS CLI (Windows)
+
+#### Prerequisites
+1. **AWS Account Setup**:
+   - Create an AWS account if you haven't already
+   - Create an IAM user and generate Access Key ID and Secret Access Key
+   - Note down these credentials for AWS CLI configuration
+
+2. **AWS CLI Setup**:
+   ```bash
+   # Create a virtual environment
+   python -m venv awsvenv
+   
+   # Activate the virtual environment
+   .\awsvenv\Scripts\activate
+   
+   # Install AWS CLI
+   pip install awscli
+   
+   # Configure AWS CLI
+   aws configure
+   # Enter your AWS Access Key ID
+   # Enter your AWS Secret Access Key
+   # Enter your preferred region (e.g., ap-south-1)
+   # Enter output format (json)
+   ```
+
+3. **Security Group Setup**:
+   - Create a security group in AWS Console
+   - Add inbound rule for HTTP (Port 80) from anywhere (0.0.0.0/0)
+   - Add inbound rule for SSH (Port 22) from your IP
+   - Note down the security group ID
+
+4. **SSH Key Setup**:
+   - Create a key pair in AWS Console
+   - Download the .pem file
+   - Place it in your working directory
+
+#### Deployment Steps
+
+1. Create a file named `deployment.sh` with the following content:
+   ```bash
+   #!/bin/bash
+
+   # Step 1: Launch EC2 Instance
+   INSTANCE_ID=$(aws ec2 run-instances \
+     --image-id "ami-053b12d3152c0cc71" \
+     --instance-type "t2.micro" \
+     --key-name "<YOUR-KEY-PAIR-NAME>" \
+     --block-device-mappings '[{"DeviceName":"/dev/sda1","Ebs":{"VolumeSize":8,"VolumeType":"gp3"}}]' \
+     --network-interfaces '{"AssociatePublicIpAddress":true,"DeviceIndex":0,"Groups":["<YOUR-SECURITY-GROUP-ID>"]}' \
+     --tag-specifications '{"ResourceType":"instance","Tags":[{"Key":"Name","Value":"django_server"}]}' \
+     --count "1" \
+     --query 'Instances[0].InstanceId' \
+     --output text)
+
+   echo "Launched EC2 Instance ID: $INSTANCE_ID"
+   sleep 10
+
+   # Step 3: Fetch Public IP
+   PUBLIC_IP=$(aws ec2 describe-instances \
+     --instance-ids "$INSTANCE_ID" \
+     --query "Reservations[*].Instances[?State.Name=='running'].[PublicIpAddress]" \
+     --output text)
+
+   if [[ -z "$PUBLIC_IP" ]]; then
+     echo "Failed to fetch public IP. Terminating instance."
+     aws ec2 terminate-instances --instance-ids "$INSTANCE_ID"
+     exit 1
+   fi
+
+   echo "Public IP: $PUBLIC_IP"
+   sleep 10
+
+   # Step 4: Deploy application
+   ssh -o StrictHostKeyChecking=no -i <YOUR-PEM-FILE>.pem ubuntu@$PUBLIC_IP "git clone https://github.com/centaurusgod/bash_django_server_deployment.git && cp bash_django_server_deployment/automate.sh /home/ubuntu/ && chmod +x /home/ubuntu/automate.sh && sed -i 's|your_ec2_instance_public_ip|$PUBLIC_IP|' /home/ubuntu/automate.sh && bash /home/ubuntu/automate.sh"
+
+   # Step 5: Open browser
+   msedge http://$PUBLIC_IP/api/docs/
+   ```
+
+2. Open Git Bash in your working directory and run:
+   ```bash
+   # In windows
+   bash deployment.sh
+
+   # In linux
+   chmod +x deployment.sh
+   ./deployment.sh
+   ```
+
+> **Note**: Replace the following placeholders in the script:
+> - `<YOUR-AMI-ID>`: Your Ubuntu Server 24.04 LTS AMI ID
+> - `<YOUR-KEY-PAIR-NAME>`: Name of your key pair
+> - `<YOUR-SECURITY-GROUP-ID>`: Your security group ID
+> - `<YOUR-PEM-FILE>`: Name of your .pem file
 
 ## What the Script Does
 
@@ -79,4 +180,3 @@ chmod +x automate.sh
 4. **Automated Backup System**
 5. **Health Checks**
 6. **Performance Monitoring Setup**
-
