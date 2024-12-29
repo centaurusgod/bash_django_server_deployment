@@ -93,6 +93,8 @@ This repository contains an automation script for deploying a Django REST API pr
      --output text)
 
    echo "Launched EC2 Instance ID: $INSTANCE_ID"
+   # Wait for 10 seconds instance to be ready 
+   echo "Waiting for 10 seconds for the instance to be ready..."
    sleep 10
 
    # Step 3: Fetch Public IP
@@ -108,6 +110,7 @@ This repository contains an automation script for deploying a Django REST API pr
    fi
 
    echo "Public IP: $PUBLIC_IP"
+   echo "Sleeping for 10 seconds to allow the ssh port to start properly in the instance..."
    sleep 10
 
    # Step 4: Deploy application
