@@ -74,7 +74,7 @@ This repository contains an automation script for deploying a Django REST API pr
 > - `<YOUR-KEY-PAIR-NAME>`: Name of your key pair
 > - `<YOUR-SECURITY-GROUP-ID>`: Your security group ID
 > - `<YOUR-PEM-FILE>`: Name of your .pem file
-> - `<YOUR-SERVER-NAME>`: Name tag for your EC2 instance (default is "django_server")
+> - `<YOUR-SERVER-NAME>`: Name tag for your EC2 instance
 
 1. Create a file named `deployment.sh` with the following content:
    ```bash
