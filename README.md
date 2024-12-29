@@ -10,23 +10,6 @@ This repository contains an automation script for deploying a Django REST API pr
 
 > **Note**: The Nginx and Gunicorn configurations in this script are tailored for the example repository mentioned above. You should modify these configurations according to your specific project requirements if using with a different Django project.
 
-## Important Improvements Needed
-
-1. **Error Handling**: Add proper error checking for each command execution
-2. **Logging**: Implement comprehensive logging for better debugging
-3. **Command Success Verification**: Add checks to verify if each step completed successfully
-4. **Rollback Mechanism**: Implement rollback functionality for failed deployments
-5. **AWS CLI Integration**: Future improvement to automatically fetch EC2 public IP using AWS CLI
-6. **Environment Variables**: Move hardcoded values to environment variables
-7. **Backup Mechanism**: Add backup functionality before making changes
-8. **Security Enhancements**: Implement additional security checks and validations
-
-## Prerequisites
-
-- An AWS EC2 instance running Ubuntu
-- SSH access to the EC2 instance (using .pem file)
-- Git installed on the EC2 instance
-- Proper AWS security group settings (Port 80 open for HTTP)
 
 ## Deployment Methods
 
@@ -167,19 +150,15 @@ chmod +x automate.sh
 - **Security Settings**: Basic security configurations
 - **Service Configuration**: System service setup
 
-## Future Improvements
+## Important Improvements Needed
 
-1. **AWS CLI Integration**:
-   ```bash
-   # Future implementation will include:
-   PUBLIC_IP=$(aws ec2 describe-instances \
-     --filters "Name=instance-state-name,Values=running" \
-     --query "Reservations[].Instances[].PublicIpAddress" \
-     --output text)
-   ```
+1. **Error Handling**: Add proper error checking for each command execution
+2. **Logging**: Implement comprehensive logging for better debugging
+3. **Command Success Verification**: Add checks to verify if each step completed successfully
+4. **Rollback Mechanism**: Implement rollback functionality for failed deployments
+5. **AWS CLI Integration**: Future improvement to automatically fetch EC2 public IP using AWS CLI
+6. **Environment Variables**: Move hardcoded values to environment variables
+7. **Backup Mechanism**: Add backup functionality before making changes
+8. **Security Enhancements**: Implement additional security checks and validations
 
-2. **Enhanced Error Handling**
-3. **Configuration Validation**
-4. **Automated Backup System**
-5. **Health Checks**
-6. **Performance Monitoring Setup**
+
