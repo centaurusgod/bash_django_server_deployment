@@ -30,7 +30,7 @@ This repository contains an automation script for deploying a Django REST API pr
 
 ## Deployment Methods
 
-### Method 1: Using AWS CLI (Windows)
+### Method 1: Using AWS CLI & Git Bash (Windows)
 
 #### Prerequisites
 1. **AWS Account Setup**:
